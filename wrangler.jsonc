@@ -13,6 +13,6 @@
     "not_found_handling": "404-page"
   },
   "routes": [
-    { "pattern": "jackstanton.dev/cmb*", "zone_name": "jackstanton.dev" }
+    { "pattern": "*.jackstanton.dev/cmb*", "zone_name": "jackstanton.dev" }
   ]
 }
