@@ -1,0 +1,76 @@
+/* Design tokens (SPEC §8.1). Every value is declared once here and used via var(). */
+:root {
+  color-scheme: light;
+  --bg: #faf9f6;
+  --surface: #ffffff;
+  --surface-2: #f3f1ec;
+  --border: #e4e0d7;
+  --text: #1d1b17;
+  --text-muted: #6a665d;
+  --accent: #b7791f;
+  --accent-strong: #8f5c10;
+  --accent-soft: #f6ebd8;
+  /* Spec value #2E8B57 is 4.0:1 on --bg; darkened to pass AA for text. */
+  --accept: #2a7a4e;
+  --reject: #c0392b;
+  --accept-soft: #e3f1e8;
+  --reject-soft: #f8e4e1;
+
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+  --font-math: "KaTeX_Main", "Times New Roman", serif;
+
+  --fs-xs: 0.8125rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: 2.25rem;
+  --lh: 1.55;
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  --radius: 8px;
+  --radius-sm: 4px;
+  --radius-pill: 999px;
+  --border-w: 1px;
+  --shadow-popover: 0 6px 24px rgb(0 0 0 / 0.12);
+
+  --header-h: 56px;
+  --content-w: 1040px;
+  --prose-w: 70ch;
+  --toolbar-w: 64px;
+  --panel-w: 400px;
+
+  --state-r: 26px;
+  --stroke: 1.5px;
+  --dur-fast: 120ms;
+  --dur-pulse: 600ms;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #141311;
+  --surface: #1c1b18;
+  --surface-2: #24221e;
+  --border: #33302a;
+  --text: #ece8e0;
+  --text-muted: #a29d92;
+  --accent: #e2a84b;
+  --accent-strong: #f0be6a;
+  --accent-soft: #3a2e1a;
+  --accept: #5cc489;
+  --reject: #ea6f62;
+  --accept-soft: #1b3326;
+  --reject-soft: #3a1f1b;
+  --shadow-popover: 0 6px 24px rgb(0 0 0 / 0.5);
+}

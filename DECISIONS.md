@@ -1,0 +1,42 @@
+# Decisions
+
+Judgement calls made where SPEC.md was silent, or where it turned out to be impractical. One line each.
+
+- Prerendering uses a small post-build script (`scripts/prerender.mjs`) with `react-dom/server` and React Router's static handler instead of `vite-react-ssg`, for full control over per-route CSS/JS preloads and head tags.
+- Editors (machine builder, grammar workbench, practice workspaces) render client-only after hydration; their pages prerender an intro paragraph or the problem statement and given machine, so crawlers still see real content and there are no hydration mismatches from localStorage.
+- Route SEO data lives in each route module's `handle.head`, used both by the prerenderer and for client-side title/meta updates.
+- State labels on diagrams are SVG text with real subscripts in a system serif (Latin Modern Math, Cambria Math, Times), not KaTeX in `foreignObject`, so SVG/PNG exports match the screen exactly.
+- Arrowheads are drawn as polygons rather than SVG markers, so they take the edge's colour in every browser and in exports.
+- Light `--accept` is `#2A7A4E` instead of `#2E8B57`, because the spec value is 4.0:1 on `--bg` and fails WCAG AA for text; every other token passes as given.
+- `--accent` (`#B7791F`, 3.5:1) is used only for strokes, outlines and focus rings (non-text), never for text; text uses `--accent-strong`.
+- The machine-builder toolbar is 180px wide rather than "narrow", because the three machine-type labels are long and must stay readable.
+- The state table moves focus with Left/Right arrows between cells; Up/Down keep their native meaning of changing a select's value, and Tab works as usual.
+- Initial/final are set from extra columns at the end of the state table (outside the course layout) so the table is a full keyboard alternative to the canvas.
+- "Compare with…" offers the user's other saved machines only; pasting a machine isn't offered because v1 has no import format.
+- Grammar-editor "squiggles" are shown as red line numbers plus a line-referenced error list, since a plain textarea can't draw inline underlines.
+- The Vocabulary panel lets users override T explicitly; V is always the inferred symbols plus T, and N = V − T.
+- Multi-character non-terminals are written ⟨noun⟩ or <noun>; a capital letter followed by a prime (A′ or A') is also one non-terminal.
+- Subset construction runs on the main thread (it is fast for ≤ 40 states in practice) with a hard cap of 4,096 reachable subsets and a clear message if the cap is hit; bounded grammar search and all practice checks run in the Web Worker.
+- Equivalence checking works directly on sets of states (on-the-fly determinisation) and treats missing transitions as ∅, so it also works for machines whose alphabets differ.
+- "Lexicographically least" counterexamples use the alphabet ordered by length then code point (so 0 < 1, a < b, 00 < 01).
+- Minimise also removes unreachable states, and names merged states by their group, e.g. {s₁,s₂}.
+- "Complete with a dead state" names the new state d (or d1, d2, … if taken); for FSMs with output, missing g values on new or existing transitions get the first output symbol.
+- FSM → grammar conversion names non-terminals S, A, B, … skipping S, and falls back to ⟨state name⟩ after 25 states.
+- Kleene's construction names the extra final state s_F, or s_F′ if the grammar already has a non-terminal F.
+- Practice "build-machine" problems in the non-deterministic section accept deterministic answers too (`dfa-or-nfa`), as SPEC §12.4 B says; section A requires FSMs without output.
+- Problem 65 (state table to diagram) checks equivalence plus the exact number of states, as the spec asks; it does not check state names.
+- Problem 41's grammar is a variation on the tutorial idea with terminals 0, 1, 2 instead of a, b, c, so the language and grammar are original.
+- Problem 48/61's context-sensitive grammar for 0ⁿ1ⁿ2ⁿ swaps CB → BC through four lAr → lwr steps with fresh letters H and K (CB → HB → HK → BK → BC). The common three-step version with one helper letter generates extra words, and the engine's verification caught it.
+- Problem 62's grammar (twice as many 0s as 1s) is verified against the predicate up to length 12, not proved correct.
+- Describe-language options each carry their own predicate, and the verification test checks that exactly the marked option matches the given language.
+- The "Is it possible?" problem for {0ⁿ1ⁿ} is sanity-checked by brute force: no FSM without output with at most 3 states agrees with it up to length 8.
+- The home page reads the problem count from `src/problems/count.ts` (checked by a test) so it doesn't load the catalogue and stays under the JS budget.
+- Practice progress is stored at `cmb:v1:progress`; workspaces at `cmb:v1:ws:<slug>`; saved machines at `cmb:v1:machines`; theme at `cmb:v1:theme`.
+- The small-screen notice's "Continue anyway" is remembered for the browser session only.
+- No GitHub Actions deploy job: the owner deploys by connecting this repository to the Worker in Cloudflare (Workers Builds). CI runs lint, unit tests, build and smoke tests on pushes and PRs only.
+- `wrangler.jsonc` includes a tiny `src/worker.ts` (redirects `/cmb` → `/cmb/` with 301 and otherwise defers to assets) so the zone route binds reliably; `_redirects` and `_headers` in `dist/` do the same for asset responses.
+- `compatibility_date` is set to the build date, 2026-11-24, per Cloudflare's guidance.
+- The CSP allows the inline theme script by its SHA-256 hash (computed at build), and inline styles for KaTeX.
+- `npm run preview` runs `wrangler dev` as specified; the Playwright smoke tests use a small Node static server (`scripts/serve-dist.mjs`) that mimics the asset handling, so they need no Cloudflare tooling. Locally they use the installed Chrome; CI installs Chromium.
+- The OG image and apple-touch-icon are rendered with KaTeX's bundled fonts (via resvg), so the build is deterministic on machines without system fonts.
+- Git: per the owner's instruction, the repository is initialised once at the end with a single commit (instead of one commit per milestone), and CLAUDE.md and SPEC.md are not committed.

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+dist-ssr/
+.wrangler/
+test-results/
+playwright-report/
+.claude/
+CLAUDE.md
+SPEC.md
+*.aux
+*.log
+*.pdf

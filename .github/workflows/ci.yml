@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+        env:
+          CI: 'true'
+      - name: Compile the TikZ fixture (if pdflatex is available)
+        run: |
+          if command -v pdflatex >/dev/null; then
+            cd tests/fixtures && pdflatex -interaction=nonstopmode -halt-on-error machine.tex
+          else
+            echo "pdflatex not available; skipping. Compile tests/fixtures/machine.tex by hand to check TikZ output."
+          fi

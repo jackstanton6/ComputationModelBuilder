@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#FAF9F6"/>
+  <text x="80" y="150" font-family="KaTeX_SansSerif" font-weight="bold" font-size="64" fill="#1D1B17">Computation Model Builder</text>
+  <text x="80" y="210" font-family="KaTeX_SansSerif" font-size="30" fill="#6A665D">A learning aid for students of MATH1064/1964 at the University of Sydney</text>
+  <rect x="80" y="244" width="72" height="4" fill="#B7791F"/>
+  <g fill="none" stroke="#1D1B17" stroke-width="3">
+    <!-- start arrow -->
+    <path d="M150 440 H232"/>
+    <circle cx="290" cy="440" r="52" fill="#FFFFFF"/>
+    <circle cx="600" cy="440" r="52" fill="#FFFFFF"/>
+    <circle cx="910" cy="440" r="52" fill="#FFFFFF"/>
+    <circle cx="910" cy="440" r="43"/>
+    <path d="M342 440 H542"/>
+    <path d="M652 440 H852"/>
+    <path d="M262 390 C 240 330, 340 330, 318 390"/>
+    <path d="M572 390 C 550 330, 650 330, 628 390"/>
+    <path d="M882 492 C 840 560, 380 560, 318 492"/>
+  </g>
+  <g fill="#1D1B17">
+    <path d="M238 440 l-14 -8 v16 z"/>
+    <path d="M548 440 l-14 -8 v16 z"/>
+    <path d="M858 440 l-14 -8 v16 z"/>
+    <path d="M318 492 l2 16 l12 -11 z"/>
+    <path d="M318 390 l-3 -15 l14 6 z"/>
+    <path d="M628 390 l-3 -15 l14 6 z"/>
+  </g>
+  <text x="150" y="425" font-family="KaTeX_SansSerif" font-size="24" fill="#6A665D">Start</text>
+  <g font-family="KaTeX_Math" font-style="italic" font-size="40" fill="#1D1B17" text-anchor="middle">
+    <text x="284" y="452">s<tspan font-size="26" dy="8">0</tspan></text>
+    <text x="594" y="452">s<tspan font-size="26" dy="8">1</tspan></text>
+    <text x="904" y="452">s<tspan font-size="26" dy="8">2</tspan></text>
+  </g>
+  <g font-family="KaTeX_Main" font-size="30" fill="#8F5C10" text-anchor="middle">
+    <text x="290" y="318">1</text>
+    <text x="600" y="318">0</text>
+    <text x="445" y="425">0</text>
+    <text x="755" y="425">1</text>
+    <text x="600" y="580">0, 1</text>
+  </g>
+</svg>
