@@ -11,8 +11,5 @@
     "binding": "ASSETS",
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page"
-  },
-  "routes": [
-    { "pattern": "*.jackstanton.dev/cmb*", "zone_name": "jackstanton.dev" }
-  ]
+  }
 }
