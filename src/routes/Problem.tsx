@@ -7,6 +7,7 @@ import ClientOnly from '../components/ClientOnly';
 import GivenView from '../components/practice/GivenView';
 import ProblemPlayer from '../components/practice/ProblemPlayer';
 import { Component as NotFound } from './NotFound';
+import { guideBySlug, guideForTopic } from '../guides';
 
 function description(p: Problem): string {
   const t = plainText(p.statement);
@@ -56,6 +57,10 @@ export function Component() {
           <span className="topic">{TOPIC_LABELS[p.topic]}</span>
         </div>
         <Markdown text={p.statement} className="statement" />
+        {(() => {
+          const g = guideBySlug(guideForTopic[p.topic]);
+          return g ? <p className="small muted">Background: <Link to={`/guides/${g.slug}/`}>{g.h1}</Link></p> : null;
+        })()}
       </header>
       {p.given && (
         <section className="stack" aria-label="Given" style={{ maxWidth: 760, marginBottom: 'var(--sp-6)' }}>

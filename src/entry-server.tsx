@@ -4,12 +4,14 @@ import { createStaticHandler, createStaticRouter, StaticRouterProvider } from 'r
 import { createRoutes, routeFiles } from './routes';
 import { BASENAME, type Head } from './seo/site';
 import { problems } from './problems';
+import { guides } from './guides';
 
 export { routeFiles };
 
 export function prerenderPaths(): string[] {
   return [
-    '/', '/machines/', '/grammars/', '/practice/', '/notation/', '/about/',
+    '/', '/machines/', '/grammars/', '/practice/', '/notation/', '/guides/', '/about/',
+    ...guides.map((g) => `/guides/${g.slug}/`),
     ...problems.map((p) => `/practice/${p.slug}/`),
   ];
 }

@@ -20,6 +20,8 @@ step, and practise with 70 auto-checked problems. Live at **https://jackstanton.
   (Earley for types 2–3, bounded search for types 0–1), Kleene's construction, and LaTeX export.
 - **Practice** (`/cmb/practice/`): 70 problems across four tiers, each verified by an automated test.
 - **Notation cheat sheet** (`/cmb/notation/`): one printable page.
+- **Guides** (`/cmb/guides/`): short explainers (subset construction, Kleene's theorem, types of grammars,
+  non-regular languages, dead states, FSMs with output, finding L(G)) linked to the tools and problems.
 
 ## Local development
 
@@ -44,6 +46,7 @@ The build writes everything to `dist/`, with the app under `dist/cmb/` so paths 
 src/engine/      pure TypeScript: machines, grammars, Earley, bounded search, conversions, LaTeX/TikZ
 src/problems/    the practice catalogue (one file per topic), the checker and its verification test
 src/components/  diagram editor, state table, simulator, grammar editor, practice workspaces
+src/guides/      the topic guides (Markdown + KaTeX + figures)
 src/routes/      one module per route; each exports its SEO head data in `handle.head`
 src/store/       zustand stores and versioned localStorage persistence
 src/workers/     the Web Worker for heavy work (bounded search, checking)

@@ -5,8 +5,12 @@ import ClientOnly from '../components/ClientOnly';
 import { Tabs } from '../components/Tabs';
 import { Tex } from '../components/Tex';
 import GrammarEditor from '../components/grammar/GrammarEditor';
+import TupleEditor from '../components/grammar/TupleEditor';
+import LanguagePanel from '../components/grammar/LanguagePanel';
+import FromLanguageTab from '../components/grammar/FromLanguageTab';
 import { ConvertTabG, DeriveTab, ExportTabG, TestTabG, TypeTab, WordsTab } from '../components/grammar/GrammarTabs';
-import { nonTerminals, parseGrammar } from '../engine/grammar';
+import { grammarToText, nonTerminals, parseGrammar } from '../engine/grammar';
+import type { Grammar } from '../engine/types';
 import { grammarTexParts, texSym } from '../engine/latex';
 import type { Derivation } from '../engine/derivation';
 import { INCOMING_KEY, readJSON, setLastVisit, writeJSON, type SavedGrammar } from '../store/persist';
@@ -39,7 +43,7 @@ function Intro() {
 const DEFAULT: SavedGrammar = { text: 'S -> 0S1 | 01', start: 'S', terminals: null };
 const TAB_DEFS = [
   { id: 'type', label: 'Type' }, { id: 'words', label: 'Words' }, { id: 'derive', label: 'Derive' },
-  { id: 'test', label: 'Test' }, { id: 'convert', label: 'Convert' }, { id: 'export', label: 'Export' },
+  { id: 'test', label: 'Test' }, { id: 'convert', label: 'Convert' }, { id: 'from', label: 'From L' }, { id: 'export', label: 'Export' },
 ];
 
 const set = (xs: string[]) => (xs.length ? `\\{${xs.map(texSym).join(', ')}\\}` : '\\emptyset');
@@ -48,7 +52,13 @@ function Workbench() {
   const navigate = useNavigate();
   const [saved, setSaved] = useState<SavedGrammar>(() => readJSON('grammar', DEFAULT));
   const [tab, setTab] = useState('type');
-  const override = saved.terminals !== null ? { T: saved.terminals.split(/[\s,]+/).filter(Boolean) } : {};
+  const split = (x: string) => x.split(/[\s,]+/).filter(Boolean);
+  const override = {
+    ...(saved.terminals != null ? { T: split(saved.terminals) } : {}),
+    ...(saved.vocab ? { V: split(saved.vocab) } : {}),
+  };
+  const mode = saved.mode ?? 'lines';
+  const [tupleKey, setTupleKey] = useState(0);
   const parsed = useMemo(() => parseGrammar(saved.text, saved.start || 'S', override), [saved]); // eslint-disable-line react-hooks/exhaustive-deps
   const g = parsed.grammar;
   const valid = parsed.errors.length === 0;
@@ -62,15 +72,36 @@ function Workbench() {
   const tex = grammarTexParts(g);
   const update = (p: Partial<SavedGrammar>) => setSaved((s) => ({ ...s, ...p }));
 
-  const openMachine = (doc: MachineDoc) => {
-    writeJSON(INCOMING_KEY, { doc, name: 'From grammar (Kleene)' });
+  const openMachine = (doc: MachineDoc, name = 'From grammar (Kleene)') => {
+    writeJSON(INCOMING_KEY, { doc, name });
     navigate('/machines/');
+  };
+
+  const fromTuple = (g2: Grammar) => {
+    const used = new Set([g2.S, ...g2.T, ...g2.P.flatMap((p) => [...p.lhs, ...p.rhs])]);
+    update({ text: grammarToText(g2), start: g2.S, terminals: g2.T.join(', '), vocab: g2.V.filter((x) => !used.has(x)).join(', ') || null });
+  };
+
+  const loadGrammar = (g2: Grammar) => {
+    setSaved((s) => ({ ...s, text: grammarToText(g2), start: g2.S, terminals: null, vocab: null }));
+    setTupleKey((k) => k + 1);
+    setTab('type');
   };
 
   return (
     <div className="grammar-page">
       <div className="grammar-left">
         <h1 className="h-sm">Grammar workbench</h1>
+        <fieldset className="mode-switch row" aria-label="How to enter the grammar">
+          <legend className="sr-only">Input mode</legend>
+          <label className={`seg${mode === 'lines' ? ' on' : ''}`}>
+            <input type="radio" name="g-mode" checked={mode === 'lines'} onChange={() => update({ mode: 'lines' })} /> Productions
+          </label>
+          <label className={`seg${mode === 'tuple' ? ' on' : ''}`}>
+            <input type="radio" name="g-mode" checked={mode === 'tuple'} onChange={() => { update({ mode: 'tuple' }); setTupleKey((k) => k + 1); }} /> G = (V, T, S, P)
+          </label>
+        </fieldset>
+        {mode === 'tuple' ? <TupleEditor key={tupleKey} initial={g} onValid={fromTuple} /> : (<>
         <GrammarEditor value={saved.text} onChange={(text) => update({ text })} errors={parsed.errors} />
         <div className="row">
           <label className="row small" htmlFor="start-symbol">Start symbol</label>
@@ -92,16 +123,20 @@ function Workbench() {
             </label>
           )}
         </section>
+        </>)}
         <section className="course-form" aria-label="Grammar in course form">
           <Tex display>{tex.tuple}</Tex>
           <Tex display>{tex.V}</Tex>
           <Tex display>{tex.T}</Tex>
           <Tex display>{tex.P}</Tex>
         </section>
+        {valid && <LanguagePanel g={g} gKey={gKey} />}
       </div>
       <div className="grammar-right">
         <Tabs tabs={TAB_DEFS} value={tab} onChange={setTab} label="Grammar panels">
-          {!valid ? (
+          {tab === 'from' ? (
+            <FromLanguageTab onUse={loadGrammar} onOpenMachine={(doc) => openMachine(doc, 'From a pattern')} />
+          ) : !valid ? (
             <p className="inline-msg">Fix the errors in the grammar first.</p>
           ) : (
             <>

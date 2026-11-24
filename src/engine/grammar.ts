@@ -178,3 +178,81 @@ export function grammar(text: string, start = 'S', override: VocabularyOverride 
   if (r.errors.length) throw new Error(r.errors.map((e) => `line ${e.line}: ${e.message}`).join('; '));
   return r.grammar;
 }
+
+// ---------- G = (V, T, S, P) entered as four fields in set notation ----------
+
+export interface TupleFields {
+  V: string;
+  T: string;
+  S: string;
+  P: string;
+}
+
+export interface TupleError {
+  field: keyof TupleFields;
+  message: string;
+}
+
+function stripSet(text: string, name: string): string {
+  let s = text.trim().replace(new RegExp(`^${name}[ \\t]*=[ \\t]*`), '').trim();
+  if (s.startsWith('\\{') && s.endsWith('\\}')) s = s.slice(2, -2);
+  else if (s.startsWith('{') && s.endsWith('}')) s = s.slice(1, -1);
+  return s;
+}
+
+function splitList(s: string, alsoNewlines: boolean): string[] {
+  const out: string[] = [];
+  let cur = '';
+  let depth = 0;
+  for (const ch of s) {
+    if (ch === '⟨' || ch === '<') depth++;
+    if (ch === '⟩' || (ch === '>' && !cur.endsWith('-'))) depth = Math.max(0, depth - 1);
+    if ((ch === ',' || (alsoNewlines && ch === '\n')) && depth === 0) {
+      out.push(cur);
+      cur = '';
+    } else cur += ch;
+  }
+  out.push(cur);
+  return out.map((x) => x.trim()).filter(Boolean);
+}
+
+function parseSymbolSet(text: string, field: 'V' | 'T', errors: TupleError[]): Sym[] {
+  const syms: Sym[] = [];
+  for (const item of splitList(stripSet(text, field), false)) {
+    const t = tokenise(item);
+    if (t.error || t.syms.length !== 1) {
+      errors.push({ field, message: `“${item}” isn’t a single symbol. Separate symbols with commas.` });
+      continue;
+    }
+    if (!syms.includes(t.syms[0])) syms.push(t.syms[0]);
+  }
+  return syms;
+}
+
+/** Parse the four fields of G = (V, T, S, P) and check them against the grammar definition. */
+export function parseTuple(f: TupleFields): { parsed: ParsedGrammar; errors: TupleError[] } {
+  const errors: TupleError[] = [];
+  const V = parseSymbolSet(f.V, 'V', errors);
+  const T = parseSymbolSet(f.T, 'T', errors);
+  const S = tokenise(f.S.trim().replace(/^S\s*=\s*/, '')).syms;
+  const start = S.length === 1 ? S[0] : 'S';
+  if (S.length !== 1) errors.push({ field: 'S', message: 'S must be a single symbol.' });
+  const prods = splitList(stripSet(f.P, 'P'), true);
+  const parsed = parseGrammar(prods.join('\n'), start, { T, V });
+  for (const e of parsed.errors) errors.push({ field: e.line > 0 || e.message.startsWith('P ') ? 'P' : 'S', message: e.line > 0 ? `In ${prods[e.line - 1] ?? 'a production'}: ${e.message}` : e.message });
+  for (const t of T) if (!V.includes(t)) errors.push({ field: 'T', message: `${t} is in T but not in V (T ⊆ V).` });
+  if (S.length === 1 && !V.includes(start)) errors.push({ field: 'S', message: `${start} must be in V.` });
+  const used = new Set(parsed.grammar.P.flatMap((p) => [...p.lhs, ...p.rhs]));
+  for (const s of used) if (!V.includes(s)) errors.push({ field: 'P', message: `${s} appears in P but isn’t in V.` });
+  return { parsed: { ...parsed, grammar: { ...parsed.grammar, V: orderSymbols(V) } }, errors };
+}
+
+/** The four fields for an existing grammar. */
+export function tupleOf(g: Grammar): TupleFields {
+  return {
+    V: `{${g.V.join(', ')}}`,
+    T: `{${g.T.join(', ')}}`,
+    S: g.S,
+    P: `{${g.P.map((p) => `${showSyms(p.lhs)} → ${showSyms(p.rhs)}`).join(',\n ')}}`,
+  };
+}

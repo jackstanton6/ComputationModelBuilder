@@ -1,5 +1,6 @@
 // Simulator: single run with step-through, saved tests, batch test and language preview.
 import { useEffect, useMemo, useRef, useState } from 'react';
+import SymbolButtons, { lambdaShortcut } from '../SymbolButtons';
 import type { DFA, Mealy, NFA, Sym } from '../../engine/types';
 import { acceptedUpTo, hasErrors, runDeterministic, runNondeterministic, validate } from '../../engine/fsm';
 import { isMultiChar, parseWord, plainName, showWord } from '../../engine/notation';
@@ -33,6 +34,8 @@ export default function TestTab() {
   const [copied, setCopied] = useState(false);
   const [ran, setRan] = useState(false);
   const pulseNonce = useRef(0);
+  const xRef = useRef<HTMLInputElement>(null);
+  const batchRef = useRef<HTMLTextAreaElement>(null);
 
   const parsed = parseWord(text, doc.input);
   const word = parsed.word;
@@ -154,7 +157,10 @@ export default function TestTab() {
       <form className="stack" onSubmit={(e) => { e.preventDefault(); setPlaying(false); setRan(true); setPos(n_); }}>
         <label className="field">
           <span>Input string x</span>
-          <input type="text" className="mono" value={text} onChange={(e) => setText(e.target.value)} placeholder="e.g. 0110 (empty means λ)" spellCheck={false} autoComplete="off" />
+          <span className="row">
+            <input ref={xRef} type="text" className="mono" style={{ flex: 1, minWidth: 0 }} value={text} onChange={(e) => setText(e.target.value)} onKeyDown={lambdaShortcut(text, setText)} placeholder="e.g. 0110 (empty means λ)" spellCheck={false} autoComplete="off" />
+            <SymbolButtons target={xRef} value={text} onChange={setText} />
+          </span>
         </label>
         {multi && <p className="xsmall muted">Separate symbols with spaces, because some symbols in I have more than one character.</p>}
         {parsed.error && <p className="xsmall reject" role="alert">{parsed.error}</p>}
@@ -258,7 +264,8 @@ export default function TestTab() {
 
       <details className="stack">
         <summary>Batch test</summary>
-        <textarea rows={5} className="mono" value={batch} onChange={(e) => setBatch(e.target.value)} placeholder={'One string per line\nλ\n0101'} aria-label="Strings to test, one per line" />
+        <div className="row"><span className="xsmall muted">One string per line; λ or an empty line is the empty string.</span><span className="spacer" /><SymbolButtons target={batchRef} value={batch} onChange={setBatch} /></div>
+        <textarea ref={batchRef} rows={5} className="mono" value={batch} onChange={(e) => setBatch(e.target.value)} onKeyDown={lambdaShortcut(batch, setBatch)} placeholder={'One string per line\nλ\n0101'} aria-label="Strings to test, one per line" />
         {batch.trim() && (
           <ul className="test-list">
             {batch.split(/\r?\n/).filter((l, i, a) => l.trim() !== '' || i < a.length - 1).map((line, i) => {

@@ -40,6 +40,11 @@ export function Markdown({ text, className }: { text: string; className?: string
       {blocks.map((b, i) => {
         const t = b.trim();
         if (t.startsWith('$$') && t.endsWith('$$')) return <Tex key={i} display>{t.slice(2, -2).trim()}</Tex>;
+        if (t.startsWith('## ')) {
+          const text = t.slice(3).trim();
+          const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+          return <h2 key={i} id={id}><Inline text={text} /></h2>;
+        }
         const lines = t.split('\n');
         if (lines.every((l) => /^\s*[-*] /.test(l))) {
           return <ul key={i}>{lines.map((l, j) => <li key={j}><Inline text={l.replace(/^\s*[-*] /, '')} /></li>)}</ul>;

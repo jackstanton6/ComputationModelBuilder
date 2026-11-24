@@ -1,5 +1,6 @@
 // Grammar workbench tabs: Type · Words · Derive · Test · Convert · Export.
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import SymbolButtons, { lambdaShortcut } from '../SymbolButtons';
 import type { Grammar, Production, Sym } from '../../engine/types';
 import { classify, TYPE_NAMES, type GrammarType } from '../../engine/classify';
 import { isContextFree, nonTerminals, showProduction, showSyms, tokenise } from '../../engine/grammar';
@@ -202,6 +203,7 @@ function parseTerminalString(text: string, g: Grammar): { word: Sym[]; error?: s
 export function TestTabG({ g }: { g: Grammar }) {
   const [text, setText] = useState('');
   const [batch, setBatch] = useState('');
+  const wRef = useRef<HTMLInputElement>(null);
   const job = useJob<Membership & { timedOut?: boolean }>();
   const [asked, setAsked] = useState<string | null>(null);
   const parsed = parseTerminalString(text, g);
@@ -218,7 +220,8 @@ export function TestTabG({ g }: { g: Grammar }) {
         <label className="field">
           <span>Is w ∈ L(G)? Enter w ∈ T⋆</span>
           <div className="row">
-            <input type="text" className="mono" value={text} onChange={(e) => setText(e.target.value)} placeholder="e.g. 0011 (empty means λ)" spellCheck={false} />
+            <input ref={wRef} type="text" className="mono" value={text} onChange={(e) => setText(e.target.value)} onKeyDown={lambdaShortcut(text, setText)} placeholder="e.g. 0011 (empty means λ)" spellCheck={false} />
+            <SymbolButtons target={wRef} value={text} onChange={setText} />
             <button type="submit" className="btn btn-primary btn-sm" disabled={!!parsed.error || job.running}>Test</button>
           </div>
         </label>
@@ -251,6 +254,7 @@ export function TestTabG({ g }: { g: Grammar }) {
 
 function BatchMembership({ g, text, setText }: { g: Grammar; text: string; setText: (s: string) => void }) {
   const [results, setResults] = useState<{ w: string; r: string; ok: boolean | null }[]>([]);
+  const bRef = useRef<HTMLTextAreaElement>(null);
   const job = useJob<Membership>();
   const runAll = async () => {
     const lines = text.split(/\r?\n/).map((l) => l.trim());
@@ -272,7 +276,8 @@ function BatchMembership({ g, text, setText }: { g: Grammar; text: string; setTe
   };
   return (
     <div className="stack">
-      <textarea rows={5} className="mono" value={text} onChange={(e) => setText(e.target.value)} placeholder={'One string per line\n0011\n010'} aria-label="Strings to test, one per line" />
+      <div className="row"><span className="xsmall muted">One string per line; λ or an empty line is the empty string.</span><span className="spacer" /><SymbolButtons target={bRef} value={text} onChange={setText} /></div>
+      <textarea ref={bRef} rows={5} className="mono" value={text} onChange={(e) => setText(e.target.value)} onKeyDown={lambdaShortcut(text, setText)} placeholder={'One string per line\n0011\n010'} aria-label="Strings to test, one per line" />
       <button type="button" className="btn btn-sm" onClick={() => void runAll()} disabled={!text.trim() || job.running}>Test all</button>
       <ul className="test-list">
         {results.map((x, i) => (

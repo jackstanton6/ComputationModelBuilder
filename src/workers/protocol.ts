@@ -4,6 +4,8 @@ export type WorkerRequest = { id: number; timeLimitMs?: number } & (
   | { type: 'words'; grammar: Grammar; n: number }
   | { type: 'membership'; grammar: Grammar; word: Sym[] }
   | { type: 'check'; slug: string; submission: unknown }
+  | { type: 'describe'; grammar: Grammar; n: number }
+  | { type: 'synth'; text: string }
 );
 
 export type WorkerResponse =

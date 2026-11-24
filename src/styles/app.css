@@ -559,3 +559,29 @@ a.card:hover { border-color: var(--accent); }
   .notation section { break-inside: avoid; margin-bottom: var(--sp-6); }
   .toc { display: none; }
 }
+
+/* Grammar workbench: tuple fields, L(G), From L */
+.mode-switch { border: 0; padding: 0; margin: 0; gap: var(--sp-1); }
+.tuple-field { display: grid; gap: var(--sp-1); }
+.tuple-field > label { font-size: var(--fs-lg); }
+.tuple-field input, .tuple-field textarea { width: 100%; }
+.language-panel { padding: var(--sp-3); border: var(--border-w) solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.language-panel .katex-display { margin: var(--sp-2) 0; text-align: left; overflow-x: auto; overflow-y: hidden; }
+.language-panel .katex-display > .katex { text-align: left; }
+.from-language .katex-display { text-align: left; overflow-x: auto; overflow-y: hidden; }
+.from-language .katex-display > .katex { text-align: left; }
+.result-card { padding: var(--sp-3); border: var(--border-w) solid var(--border); border-radius: var(--radius); }
+.pattern-form { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: end; }
+
+/* Guides */
+.guide-list { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--sp-3); max-width: var(--prose-w); }
+.guide h2:not(.h-sm) { margin-top: var(--sp-8); }
+.guide .katex-display { text-align: left; }
+.guide-figure { margin: var(--sp-6) 0; max-width: 640px; }
+.guide-figure figcaption { margin-top: var(--sp-2); }
+.guide-aside { margin-top: var(--sp-10); padding-top: var(--sp-6); border-top: var(--border-w) solid var(--border); max-width: var(--prose-w); }
+.guide-aside ul { margin-bottom: var(--sp-4); }
+
+/* Symbol insert buttons (λ, →, …) */
+.symbol-buttons { display: inline-flex; gap: 2px; }
+.symbol-btn { min-width: 28px; padding: 0 var(--sp-1); font-family: var(--font-math); }

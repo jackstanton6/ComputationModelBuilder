@@ -55,5 +55,24 @@ test('practice: wrong answers get feedback, statements are prerendered', async (
 test('sitemap lists every prerendered page', async ({ request }) => {
   const xml = await (await request.get('/cmb/sitemap.xml')).text();
   const count = (xml.match(/<loc>/g) ?? []).length;
-  expect(count).toBe(6 + 70);
+  expect(count).toBe(7 + 7 + 70);
+});
+
+test('grammar workbench: λ button, L(G) panel and language → grammar', async ({ page }) => {
+  await page.goto('/cmb/grammars/');
+  const editor = page.getByLabel(/Productions P/);
+  await editor.fill('S -> 0S1 | ');
+  await editor.press('End');
+  await page.getByRole('button', { name: 'Insert λ (the empty string)' }).first().click();
+  await expect(editor).toHaveValue('S -> 0S1 | λ');
+  await expect(page.getByLabel('The language L(G)').getByText('λ, 01, 0011, 000111')).toBeVisible();
+  await page.getByRole('tab', { name: 'From L' }).click();
+  await page.getByRole('button', { name: 'Build grammar' }).click();
+  await expect(page.getByText('L(G) agrees with L on every string up to length 10.')).toBeVisible();
+});
+
+test('guides are prerendered and linked', async ({ request }) => {
+  const html = await (await request.get('/cmb/guides/subset-construction/')).text();
+  expect(html).toContain('The subset construction');
+  expect(html).toContain('"@type":["Article","LearningResource"]');
 });

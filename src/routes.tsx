@@ -12,6 +12,8 @@ export const routeFiles: Record<string, string> = {
   problem: 'src/routes/Problem.tsx',
   notation: 'src/routes/Notation.tsx',
   about: 'src/routes/About.tsx',
+  guides: 'src/routes/Guides.tsx',
+  guide: 'src/routes/Guide.tsx',
   notfound: 'src/routes/NotFound.tsx',
 };
 
@@ -28,6 +30,8 @@ export function createRoutes(): RouteObject[] {
         { id: 'problem', path: 'practice/:slug', lazy: () => import('./routes/Problem') },
         { id: 'notation', path: 'notation', lazy: () => import('./routes/Notation') },
         { id: 'about', path: 'about', lazy: () => import('./routes/About') },
+        { id: 'guides', path: 'guides', lazy: () => import('./routes/Guides') },
+        { id: 'guide', path: 'guides/:slug', lazy: () => import('./routes/Guide') },
         { id: 'notfound', path: '*', lazy: () => import('./routes/NotFound') },
       ],
     },

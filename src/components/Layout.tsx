@@ -8,11 +8,11 @@ import { ConfirmProvider } from './Confirm';
 export function Mark({ size = 22 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2">
-      <circle cx="8" cy="16" r="5.5" />
-      <circle cx="24" cy="16" r="5.5" />
-      <circle cx="24" cy="16" r="2.6" />
-      <path d="M13.8 16h3.6" />
-      <path d="M16.4 13.2 19.2 16l-2.8 2.8" strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx="7" cy="16" r="4.6" />
+      <circle cx="25" cy="16" r="4.6" />
+      <circle cx="25" cy="16" r="1.9" fill="currentColor" stroke="none" />
+      <path d="M12.8 16H16" />
+      <path d="M15.4 13 18.6 16l-3.2 3z" fill="currentColor" strokeWidth="1" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -101,6 +101,7 @@ export default function Layout() {
           <NavLink to="/grammars/">Grammars</NavLink>
           <NavLink to="/practice/">Practice</NavLink>
           <NavLink to="/notation/">Notation</NavLink>
+          <NavLink to="/guides/">Guides</NavLink>
         </nav>
         <span className="spacer" />
         <ThemeToggle />
@@ -114,7 +115,7 @@ export default function Layout() {
         <p>{SUBTITLE}.</p>
         <p>{DISCLAIMER}</p>
         <p>
-          <a href={REPO_URL}>Source on GitHub</a> · MIT licence · <Link to="/about/">About</Link>
+          <Link to="/guides/">Guides</Link> · <Link to="/notation/">Notation</Link> · <Link to="/about/">About</Link> · <a href={REPO_URL}>Source on GitHub</a> · MIT licence
         </p>
       </footer>
       <HeadSync />

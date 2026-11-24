@@ -78,7 +78,8 @@ export function Component() {
           is written the way your lectures write it: f and g, s₀, λ for the empty string, L(M), and G = (V, T, S, P).
         </p>
         <p>
-          New to the notation? Start with the <Link to="/notation/">notation cheat sheet</Link>. Everything you build
+          New to the notation? Start with the <Link to="/notation/">notation cheat sheet</Link>, or read the
+          short <Link to="/guides/">guides</Link> on the subset construction, Kleene’s theorem and the types of grammars. Everything you build
           is saved in your browser; there are no accounts.
         </p>
       </section>

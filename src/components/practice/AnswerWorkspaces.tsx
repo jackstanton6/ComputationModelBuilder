@@ -1,5 +1,6 @@
 // Workspaces for answer-type problems: trace, describe, classify, possible, fill-table.
-import { useId } from 'react';
+import { useId, useRef } from 'react';
+import SymbolButtons, { lambdaShortcut } from '../SymbolButtons';
 import type { Machine, NFA, StateId } from '../../engine/types';
 import { plainName, stateName } from '../../engine/notation';
 import type { AnswerKey, Problem, TraceField } from '../../problems/types';
@@ -91,17 +92,27 @@ function Choices({ options, value, onChange, name, fields }: { options: { text: 
 export function DescribeWorkspace({ p, values, set, fields }: WSProps) {
   const ref = p.reference as Extract<AnswerKey, { kind: 'describe' }>;
   const name = useId();
+  const inRef = useRef<HTMLInputElement>(null);
+  const outRef = useRef<HTMLInputElement>(null);
+  const inL = (values.inL as string) ?? '';
+  const notInL = (values.notInL as string) ?? '';
   return (
     <div className="stack">
       <Choices options={ref.options} value={values.choice} onChange={(i) => set('choice', i)} name={name} fields={fields} />
       <div className="answer-grid">
         <label>
           <span>A string in the language{mark(fields, 'inL')}</span>
-          <input type="text" className="mono" value={(values.inL as string) ?? ''} onChange={(e) => set('inL', e.target.value)} spellCheck={false} placeholder="λ allowed" />
+          <span className="row">
+            <input ref={inRef} type="text" className="mono" value={inL} onChange={(e) => set('inL', e.target.value)} onKeyDown={lambdaShortcut(inL, (v) => set('inL', v))} spellCheck={false} placeholder="λ allowed" />
+            <SymbolButtons target={inRef} value={inL} onChange={(v) => set('inL', v)} />
+          </span>
         </label>
         <label>
           <span>A string not in the language{mark(fields, 'notInL')}</span>
-          <input type="text" className="mono" value={(values.notInL as string) ?? ''} onChange={(e) => set('notInL', e.target.value)} spellCheck={false} placeholder="λ allowed" />
+          <span className="row">
+            <input ref={outRef} type="text" className="mono" value={notInL} onChange={(e) => set('notInL', e.target.value)} onKeyDown={lambdaShortcut(notInL, (v) => set('notInL', v))} spellCheck={false} placeholder="λ allowed" />
+            <SymbolButtons target={outRef} value={notInL} onChange={(v) => set('notInL', v)} />
+          </span>
         </label>
       </div>
     </div>

@@ -66,6 +66,9 @@ export interface SavedGrammar {
   text: string;
   start: string;
   terminals: string | null;
+  /** Extra symbols of V that don't appear in P (from the V, T, S, P fields). */
+  vocab?: string | null;
+  mode?: 'lines' | 'tuple';
 }
 
 // ---------- "Continue where you left off" ----------
